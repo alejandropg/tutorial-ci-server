@@ -1,0 +1,11 @@
+version: '3.5'
+
+# https://github.com/jenkinsci/docker
+
+services:
+
+  jenkins:
+    image: jenkins/jenkins:lts-alpine
+    ports:
+      - 8080:8080
+      - 50000:50000

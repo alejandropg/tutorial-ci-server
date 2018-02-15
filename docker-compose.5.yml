@@ -1,0 +1,58 @@
+version: '3.5'
+
+services:
+
+  # https://github.com/jenkinsci/docker
+
+  jenkins:
+    image: tutorial/jenkins-with-docker:lts-alpine
+    depends_on:
+      - jenkins-setup-docker
+    volumes:
+      - jenkins-data:/var/jenkins_home:delegated
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+      - 50000:50000
+    networks:
+      ci-network:
+    secrets:
+      - jenkins-user
+      - jenkins-pass
+
+  jenkins-setup-docker:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile-with-docker
+    image: tutorial/jenkins-with-docker:lts-alpine
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    user: root
+    command: "chgrp jenkins /var/run/docker.sock"
+
+
+  # https://hub.docker.com/_/nginx/
+
+  nginx:
+    image: nginx:1.13-alpine
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    networks:
+      ci-network:
+        aliases: 
+          - jenkins.autentia.com
+
+
+volumes:
+  jenkins-data:
+
+networks:
+  ci-network:
+
+secrets:
+  jenkins-user:
+    file: ./jenkins/jenkins-user.txt
+  jenkins-pass:
+    file: ./jenkins/jenkins-pass.txt

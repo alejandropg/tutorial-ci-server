@@ -1,0 +1,34 @@
+version: '3.5'
+
+# https://github.com/jenkinsci/docker
+
+services:
+
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile-with-docker
+    image: tutorial/jenkins-with-docker:lts-alpine
+    volumes:
+      - jenkins-data:/var/jenkins_home:delegated
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+      - 50000:50000
+    networks:
+      ci-network:
+    secrets:
+      - jenkins-user
+      - jenkins-pass
+
+volumes:
+  jenkins-data:
+
+networks:
+  ci-network:
+
+secrets:
+  jenkins-user:
+    file: ./jenkins/jenkins-user.txt
+  jenkins-pass:
+    file: ./jenkins/jenkins-pass.txt

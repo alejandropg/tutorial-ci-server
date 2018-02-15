@@ -1,0 +1,21 @@
+version: '3.5'
+
+# https://github.com/jenkinsci/docker
+
+services:
+
+  jenkins:
+    image: jenkins/jenkins:lts-alpine
+    volumes:
+      - jenkins-data:/var/jenkins_home:delegated
+    ports:
+      - 8080:8080
+      - 50000:50000
+    networks:
+      ci-network:
+
+volumes:
+  jenkins-data:
+
+networks:
+  ci-network:
